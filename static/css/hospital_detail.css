@@ -1,0 +1,114 @@
+/* Hospital Header Styles */
+.hospital-header {
+    background: #007bff;
+    color: white;
+    padding: 60px 0;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.hospital-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Card Styles */
+.department-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+
+.department-card:hover {
+    transform: translateY(-5px);
+}
+
+.doctor-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.doctor-card:hover {
+    transform: translateY(-3px);
+}
+
+.doctor-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+/* Booking Card Styles */
+.booking-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+.booking-card form {
+    margin-top: 20px;
+}
+
+.booking-card .form-control,
+.booking-card .form-select {
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+
+.booking-card .btn {
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Icon Styles */
+.facility-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hospital-header {
+        padding: 40px 0;
+    }
+
+    .booking-card {
+        position: static;
+        margin-top: 30px;
+    }
+
+    .doctor-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .doctor-image {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+}

@@ -1,0 +1,89 @@
+.hospitals-found-title {
+    color: #0056b3;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.hospital-card {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.hospital-card:hover {
+    transform: translateY(-5px);
+}
+
+.hospital-name {
+    color: #0056b3;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.hospital-address {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    color: #0056b3;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.book-appointment-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.book-appointment-btn:hover {
+    background-color: #0056b3;
+}
+/* Add these to your existing styles */
+.hospital-card h3 {
+    color: #0056b3;  /* Blue color for hospital names */
+}
+
+h2 {
+    color: #0056b3;  /* Blue color for "Hospitals Found" */
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.hospital-stats .stat-item h5 {
+    color: #0056b3;  /* Blue color for stats numbers */
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}

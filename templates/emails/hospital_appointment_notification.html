@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Appointment Request</title>
+</head>
+<body>
+    <h2>New Appointment Request</h2>
+    
+    <p>A new appointment has been booked with the following details:</p>
+    
+    <ul>
+        <li>Patient Name: {{ patient_name }}</li>
+        <li>Patient ID: {{ patient_id }}</li>
+        <li>Department: {{ department_name }}</li>
+        <li>Date: {{ appointment_date }}</li>
+        <li>Time: {{ appointment_time }}</li>
+        <li>Reason: {{ reason }}</li>
+    </ul>
+    
+    <h3>Patient Contact Information:</h3>
+    <ul>
+        <li>Email: {{ patient_email }}</li>
+        <li>Phone: {{ patient_phone }}</li>
+    </ul>
+    
+    <p>Please review and confirm this appointment through your hospital dashboard.</p>
+    
+    <hr>
+    <p style="color: #666; font-size: 12px;">
+        This is an automated message. Please do not reply to this email.
+    </p>
+</body>
+</html>

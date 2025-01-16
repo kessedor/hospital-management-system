@@ -1,0 +1,24 @@
+{% load static %}  <!-- Add this line at the top -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Directory</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Hospital Directory</h1>
+    <ul>
+        {% for hospital in hospitals %}
+            <li>
+                <h2>{{ hospital.name }}</h2>
+                <p>Address: {{ hospital.address }}</p>
+                <p>Available Beds: {{ hospital.available_beds }}</p>
+                <p>Emergency Status: {{ hospital.emergency_status }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

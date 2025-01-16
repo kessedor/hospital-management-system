@@ -1,0 +1,242 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <!-- Hospital Name & Toggle Button -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'authentication:hospital_dashboard' %}">
+            <i class="fas fa-hospital me-2"></i>
+            <span class="hospital-name">{{ request.user.hospital.name }}</span>
+            {% if request.user.hospital.emergency_status == 'CLOSED' %}
+                <span class="badge bg-danger ms-2">CLOSED</span>
+            {% else %}
+                <span class="badge bg-success ms-2">OPEN</span>
+            {% endif %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#hospitalNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation Items -->
+        <div class="collapse navbar-collapse" id="hospitalNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page == 'dashboard' %}active{% endif %}" 
+                       href="{% url 'authentication:hospital_dashboard' %}">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <!-- Staff Management -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page == 'staff' %}active{% endif %}" 
+                       href="{% url 'authentication:staff_management' %}">
+                        <i class="fas fa-users me-2"></i>
+                        Staff
+                    </a>
+                </li>
+
+                <!-- Patient Management -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page == 'patients' %}active{% endif %}" 
+                       href="{% url 'patient_management:patient_list' %}">
+                        <i class="fas fa-user-injured me-2"></i>
+                        Patients
+                    </a>
+                </li>
+
+                <!-- Inventory Management -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page == 'inventory' %}active{% endif %}" 
+   href="{% url 'authentication:inventory_management' %}">
+                        <i class="fas fa-boxes me-2"></i>
+                        Inventory
+                    </a>
+                </li>
+
+                <!-- Appointments -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page == 'appointments' %}active{% endif %}" 
+                       href="{% url 'authentication:hospital_appointments' %}">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        Appointments
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right Side Items -->
+            <ul class="navbar-nav ms-auto">
+                <!-- Settings Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="settingsDropdown" 
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <span class="d-none d-md-inline">Hospital Admin</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+                        <h6 class="dropdown-header">{{ request.user.hospital.name }}</h6>
+                        <a class="dropdown-item" href="{% url 'authentication:hospital_dashboard' %}">
+                            <i class="fas fa-hospital me-2"></i>Hospital Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="{% url 'authentication:logout' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Navbar Base Styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    padding: 0.8rem 1rem;
+    background: linear-gradient(to right, #0062cc, #0056b3) !important;
+}
+
+/* Brand Styles */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.hospital-name {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.navbar-brand .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Navigation Links */
+.nav-link {
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s ease;
+    margin: 0 0.2rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.dropdown-header {
+    font-weight: 600;
+    color: #6c757d;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item {
+    padding: 0.7rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 991.98px) {
+    .navbar-brand {
+        font-size: 1rem;
+        max-width: 60%;
+    }
+
+    .hospital-name {
+        max-width: 150px;
+    }
+
+    .navbar-nav {
+        padding: 1rem 0;
+    }
+    
+    .nav-link {
+        padding: 0.8rem 1rem !important;
+        margin: 0.2rem 0;
+    }
+    
+    .dropdown-menu {
+        background: transparent;
+        box-shadow: none;
+        border: none;
+        padding: 0.5rem;
+        margin: 0;
+    }
+    
+    .dropdown-item {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 0.8rem;
+        border-radius: 0.25rem;
+    }
+    
+    .dropdown-item:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dropdown-divider {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Touch-friendly enhancements */
+@media (hover: none) {
+    .nav-link, .dropdown-item {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .nav-link:active, .dropdown-item:active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Small screen optimizations */
+@media (max-width: 576px) {
+    .navbar {
+        padding: 0.6rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+
+    .hospital-name {
+        max-width: 120px;
+    }
+
+    .navbar-brand .badge {
+        font-size: 0.7rem;
+    }
+}
+</style>

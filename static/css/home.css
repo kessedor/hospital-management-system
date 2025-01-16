@@ -1,0 +1,138 @@
+/* Reset and Base Styles */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Hero Section with !important flags */
+.hero-section {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    color: white !important;
+    padding: 100px 0 !important;
+    margin-top: -24px !important;
+}
+
+.hero-section h1,
+.hero-section .display-4 {
+    color: white !important;
+    font-size: 3.5rem !important;
+    font-weight: bold !important;
+    margin-bottom: 1.5rem !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+.hero-section p,
+.hero-section .lead {
+    color: white !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 2rem !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+/* Features Section */
+.features-section {
+    background-color: #f8f9fa !important;
+    padding: 80px 0 !important;
+}
+
+.feature-card {
+    background: white !important;
+    border-radius: 10px !important;
+    padding: 30px !important;
+    margin-bottom: 30px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    transition: transform 0.3s ease !important;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px) !important;
+}
+
+.feature-card h3 {
+    color: #2c3e50 !important;
+    font-weight: 600 !important;
+}
+
+.feature-card p {
+    color: #6c757d !important;
+}
+
+.feature-icon {
+    font-size: 2.5rem !important;
+    color: #007bff !important;
+    margin-bottom: 20px !important;
+}
+
+/* Call to Action Section */
+.cta-section {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%) !important;
+    color: white !important;
+    padding: 80px 0 !important;
+    text-align: center !important;
+}
+
+.cta-section h2 {
+    color: white !important;
+    font-size: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+    font-weight: bold !important;
+}
+
+.cta-section p {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 1.2rem !important;
+}
+
+.cta-buttons {
+    margin-top: 2rem !important;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+    padding: 12px 30px !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+
+.btn-outline-primary {
+    color: white !important;
+    border-color: white !important;
+    padding: 12px 30px !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: white !important;
+    color: #007bff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+
+/* Additional Styles for Better Visibility */
+.text-white {
+    color: white !important;
+}
+
+.bg-primary {
+    background-color: #007bff !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}

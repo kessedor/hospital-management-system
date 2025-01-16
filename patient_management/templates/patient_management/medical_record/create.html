@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}New Medical Record | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .medical-record-form {
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Enhanced Card Styles */
+    .record-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .record-card:hover {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Controls Enhancement */
+    .form-control, 
+    .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+    }
+
+    /* Section Headers */
+    .section-header {
+        color: #2d3748;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .medical-record-form {
+            padding: 1rem 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .col-md-3,
+        .col-md-4,
+        .col-md-6 {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 medical-record-form">
+    <h1 class="mt-4">New Medical Record</h1>
+    
+    <div class="card record-card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Patient: {{ patient.user.get_full_name }} ({{ patient.patient_id }})</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {{ form.patient }}
+
+                <div class="mb-3">
+                    <label for="{{ form.doctor.id_for_label }}" class="form-label">Doctor</label>
+                    {{ form.doctor }}
+                    {% if form.doctor.errors %}
+                    <div class="text-danger">{{ form.doctor.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <h6 class="section-header">Vital Signs</h6>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="{{ form.temperature.id_for_label }}" class="form-label">Temperature (°C)</label>
+                        {{ form.temperature }}
+                        {% if form.temperature.errors %}
+                        <div class="text-danger">{{ form.temperature.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="{{ form.blood_pressure.id_for_label }}" class="form-label">Blood Pressure</label>
+                        {{ form.blood_pressure }}
+                        {% if form.blood_pressure.errors %}
+                        <div class="text-danger">{{ form.blood_pressure.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="{{ form.pulse_rate.id_for_label }}" class="form-label">Pulse Rate</label>
+                        {{ form.pulse_rate }}
+                        {% if form.pulse_rate.errors %}
+                        <div class="text-danger">{{ form.pulse_rate.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="{{ form.respiratory_rate.id_for_label }}" class="form-label">Respiratory Rate</label>
+                        {{ form.respiratory_rate }}
+                        {% if form.respiratory_rate.errors %}
+                        <div class="text-danger">{{ form.respiratory_rate.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="{{ form.weight.id_for_label }}" class="form-label">Weight (kg)</label>
+                        {{ form.weight }}
+                        {% if form.weight.errors %}
+                        <div class="text-danger">{{ form.weight.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="{{ form.height.id_for_label }}" class="form-label">Height (cm)</label>
+                        {{ form.height }}
+                        {% if form.height.errors %}
+                        <div class="text-danger">{{ form.height.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="{{ form.oxygen_saturation.id_for_label }}" class="form-label">O2 Saturation (%)</label>
+                        {{ form.oxygen_saturation }}
+                        {% if form.oxygen_saturation.errors %}
+                        <div class="text-danger">{{ form.oxygen_saturation.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h6 class="section-header">Medical Information</h6>
+                <div class="mb-3">
+                    <label for="{{ form.symptoms.id_for_label }}" class="form-label">Symptoms</label>
+                    {{ form.symptoms }}
+                    {% if form.symptoms.errors %}
+                    <div class="text-danger">{{ form.symptoms.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.diagnosis.id_for_label }}" class="form-label">Diagnosis</label>
+                    {{ form.diagnosis }}
+                    {% if form.diagnosis.errors %}
+                    <div class="text-danger">{{ form.diagnosis.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.treatment.id_for_label }}" class="form-label">Treatment</label>
+                    {{ form.treatment }}
+                    {% if form.treatment.errors %}
+                    <div class="text-danger">{{ form.treatment.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.prescription.id_for_label }}" class="form-label">Prescription</label>
+                    {{ form.prescription }}
+                    {% if form.prescription.errors %}
+                    <div class="text-danger">{{ form.prescription.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <h6 class="section-header">Follow-up Information</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.follow_up_date.id_for_label }}" class="form-label">Follow-up Date</label>
+                        {{ form.follow_up_date }}
+                        {% if form.follow_up_date.errors %}
+                        <div class="text-danger">{{ form.follow_up_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.follow_up_notes.id_for_label }}" class="form-label">Follow-up Notes</label>
+                        {{ form.follow_up_notes }}
+                        {% if form.follow_up_notes.errors %}
+                        <div class="text-danger">{{ form.follow_up_notes.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h6 class="section-header">Additional Information</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.lab_results.id_for_label }}" class="form-label">Lab Results</label>
+                        {{ form.lab_results }}
+                        {% if form.lab_results.errors %}
+                        <div class="text-danger">{{ form.lab_results.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.attachments.id_for_label }}" class="form-label">Attachments</label>
+                        {{ form.attachments }}
+                        {% if form.attachments.errors %}
+                        <div class="text-danger">{{ form.attachments.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                    <div class="text-danger">{{ form.notes.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Record
+                    </button>
+                    <a href="{% url 'patient_management:medical_record_list' patient.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        // Form submission handling
+        form.addEventListener('submit', function(e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Record...';
+            }
+            form.classList.add('was-validated');
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

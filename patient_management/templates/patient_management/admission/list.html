@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admissions | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .admission-list-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Table Card */
+    .table-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .admission-table {
+        margin: 0;
+    }
+
+    .admission-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: #4a5568;
+        padding: 1rem;
+        white-space: nowrap;
+    }
+
+    .admission-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .admission-table tr {
+        transition: all 0.2s ease;
+    }
+
+    .admission-table tr:hover {
+        background: #f8fafc;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        margin: 0 0.25rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Pagination */
+    .pagination {
+        margin: 1rem 0 0;
+    }
+
+    .page-link {
+        border: none;
+        padding: 0.75rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        color: #4a5568;
+        transition: all 0.2s ease;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .admission-list-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .stats-card {
+            margin-bottom: 1rem;
+        }
+
+        .filter-section {
+            padding: 1rem;
+        }
+
+        .filter-section .btn {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .table-card {
+            border-radius: 0;
+        }
+
+        .admission-table {
+            min-width: 800px;
+        }
+
+        .action-btn {
+            padding: 0.4rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .admission-list-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .stats-card,
+        .filter-section,
+        .table-card {
+            background: #2d3748;
+        }
+
+        .admission-table th {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .admission-table td {
+            color: #e2e8f0;
+        }
+
+        .admission-table tr:hover {
+            background: #1a202c;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admission-list-container">
+    <div class="container-fluid">
+        <!-- Stats Cards Row -->
+        <div class="row">
+            <!-- Stats cards here -->
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <!-- Filter form here -->
+        </div>
+
+        <!-- Admissions Table -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <!-- Table content here -->
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <!-- Pagination content here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Select2
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
+
+        // Enhanced table interactions
+        const tableRows = document.querySelectorAll('.admission-table tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a, button')) {
+                    const detailUrl = this.dataset.url;
+                    if (detailUrl) {
+                        window.location.href = detailUrl;
+                    }
+                }
+            });
+        });
+
+        // Form handling
+        const filterForm = document.querySelector('.filter-form');
+        if (filterForm) {
+            filterForm.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Searching...';
+            });
+        }
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            // Add horizontal scroll hints
+            const tableWrapper = document.querySelector('.table-responsive');
+            if (tableWrapper && tableWrapper.scrollWidth > tableWrapper.clientWidth) {
+                tableWrapper.classList.add('has-scroll');
+            }
+        }
+    });
+</script>
+{% endblock %}

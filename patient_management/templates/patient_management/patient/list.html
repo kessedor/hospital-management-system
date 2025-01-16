@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patients | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .patient-list-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card .card-body {
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-card .stats-icon {
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        font-size: 3rem;
+        opacity: 0.1;
+    }
+
+    .stats-card h4 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Search and Filter Section */
+    .filter-section {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-section .form-control,
+    .filter-section .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .filter-section .form-control:focus,
+    .filter-section .form-select:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Patient Table Card */
+    .table-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-responsive {
+        margin: -1px;
+    }
+
+    .patient-table {
+        margin: 0;
+    }
+
+    .patient-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: #4a5568;
+        padding: 1rem;
+        white-space: nowrap;
+    }
+
+    .patient-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .patient-table tr {
+        transition: all 0.2s ease;
+    }
+
+    .patient-table tr:hover {
+        background: #f8fafc;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        margin: 0 0.25rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Pagination */
+    .pagination {
+        margin: 0;
+    }
+
+    .page-link {
+        border: none;
+        padding: 0.75rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        color: #4a5568;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background: #e2e8f0;
+        transform: translateY(-1px);
+    }
+
+    .page-item.active .page-link {
+        background: #4299e1;
+        color: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .patient-list-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .stats-card {
+            margin-bottom: 1rem;
+        }
+
+        .filter-section {
+            padding: 1rem;
+        }
+
+        .filter-section .btn {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .table-card {
+            border-radius: 0;
+        }
+
+        .patient-table {
+            min-width: 800px;
+        }
+
+        .action-btn {
+            padding: 0.4rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .patient-list-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .stats-card,
+        .filter-section,
+        .table-card {
+            background: #2d3748;
+        }
+
+        .patient-table th {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .patient-table td {
+            color: #e2e8f0;
+        }
+
+        .patient-table tr:hover {
+            background: #1a202c;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: #1a202c;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="patient-list-container">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Patient List</h1>
+        <a href="{% url 'patient_management:patient_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Patient
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-3">
+            <div class="stats-card">
+                <div class="card-body">
+                    <h4>{{ total_count|default:"0" }}</h4>
+                    <p class="mb-0">Total Patients</p>
+                    <i class="fas fa-users stats-icon"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Add more stat cards as needed -->
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section mb-4">
+        <form class="filter-form row g-3">
+            <div class="col-12 col-md-4">
+                <input type="text" class="form-control" placeholder="Search patients..." name="search" value="{{ search_query }}">
+            </div>
+            <div class="col-12 col-md-3">
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    {% for status in status_choices %}
+                    <option value="{{ status.0 }}" {% if status.0 == status_filter %}selected{% endif %}>
+                        {{ status.1 }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+<!-- Patient Table -->
+<div class="table-card">
+    {% if patients %}
+        <div class="table-responsive">
+            <table class="patient-table table mb-0">
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Medical Records</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr data-url="{% url 'patient_management:patient_detail' patient.pk %}">
+                        <td>{{ patient.patient_id }}</td>
+                        <td>
+                            <a href="{% url 'patient_management:patient_detail' patient.pk %}" 
+                               class="text-decoration-none">
+                                {{ patient.user.get_full_name }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if patient.user.phone_number %}
+                                <i class="fas fa-phone me-1"></i> {{ patient.user.phone_number }}
+                            {% endif %}
+                            {% if patient.user.email %}
+                                <br>
+                                <i class="fas fa-envelope me-1"></i> {{ patient.user.email }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% with records_count=patient.medical_records.count %}
+                                {% if records_count %}
+                                    <span class="badge bg-info">
+                                        {{ records_count }} record{{ records_count|pluralize }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">No records yet</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'patient_management:patient_detail' patient.pk %}" 
+                                   class="action-btn btn btn-sm btn-info" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'patient_management:medical_record_create' patient.pk %}" 
+                                   class="action-btn btn btn-sm btn-success" title="Add Medical Record">
+                                    <i class="fas fa-notes-medical"></i>
+                                </a>
+                                <a href="{% url 'patient_management:patient_edit' patient.pk %}" 
+                                   class="action-btn btn btn-sm btn-primary" title="Edit Patient">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-user-injured fa-3x text-muted mb-3"></i>
+            <h4>No Patients Found</h4>
+            <p class="text-muted">Start by adding your first patient.</p>
+            <a href="{% url 'patient_management:patient_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Patient
+            </a>
+        </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhanced table interactions
+        const tableRows = document.querySelectorAll('.patient-table tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a, button')) {
+                    const detailUrl = this.dataset.url;
+                    if (detailUrl) {
+                        window.location.href = detailUrl;
+                    }
+                }
+            });
+        });
+
+        // Form handling
+        const filterForm = document.querySelector('.filter-form');
+        if (filterForm) {
+            filterForm.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Searching...';
+            });
+        }
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            // Add horizontal scroll hints
+            const tableWrapper = document.querySelector('.table-responsive');
+            if (tableWrapper && tableWrapper.scrollWidth > tableWrapper.clientWidth) {
+                tableWrapper.classList.add('has-scroll');
+            }
+        }
+    });
+</script>
+{% endblock %}

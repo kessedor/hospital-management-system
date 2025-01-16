@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical Record Details | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .medical-record-detail {
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    /* Enhanced Card Styles */
+    .detail-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: none;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        background: white;
+    }
+
+    .detail-card:hover {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Info Section Styles */
+    .info-section {
+        padding: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.75rem;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #4a5568;
+        width: 30%;
+        min-width: 120px;
+    }
+
+    .info-value {
+        color: #2d3748;
+        flex: 1;
+    }
+
+    /* Vital Signs Card */
+    .vital-signs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .vital-sign-item {
+        background: #f7fafc;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .vital-sign-label {
+        color: #4a5568;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .vital-sign-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .medical-record-detail {
+            padding: 1rem 0.5rem;
+        }
+
+        .detail-card {
+            border-radius: 0;
+        }
+
+        .info-row {
+            flex-direction: column;
+        }
+
+        .info-label {
+            width: 100%;
+            margin-bottom: 0.25rem;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="medical-record-detail">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <h1 class="mb-0">Medical Record Details</h1>
+            <div class="btn-group">
+                <a href="{% url 'patient_management:medical_record_update' record.patient.pk record.pk %}" 
+                   class="btn btn-primary me-2">
+                    <i class="fas fa-edit me-2"></i>Edit Record
+                </a>
+                <a href="{% url 'patient_management:medical_record_list' record.patient.pk %}" 
+                   class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Patient Information Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-circle me-2"></i>Patient Information</h5>
+            </div>
+            <div class="info-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">Patient ID:</div>
+                            <div class="info-value">{{ record.patient.patient_id }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Name:</div>
+                            <div class="info-value">{{ record.patient.user.get_full_name }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Gender:</div>
+                            <div class="info-value">{{ record.patient.get_gender_display }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <div class="info-label">Age:</div>
+                            <div class="info-value">{{ record.patient.age }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Blood Group:</div>
+                            <div class="info-value">{{ record.patient.blood_group }}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Doctor:</div>
+                            <div class="info-value">{{ record.doctor.user.get_full_name }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vital Signs Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-heartbeat me-2"></i>Vital Signs</h5>
+            </div>
+            <div class="vital-signs">
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Temperature</div>
+                    <div class="vital-sign-value">{{ record.temperature|default:"-" }}°C</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Blood Pressure</div>
+                    <div class="vital-sign-value">{{ record.blood_pressure|default:"-" }}</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Pulse Rate</div>
+                    <div class="vital-sign-value">{{ record.pulse_rate|default:"-" }} bpm</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Respiratory Rate</div>
+                    <div class="vital-sign-value">{{ record.respiratory_rate|default:"-" }} /min</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Weight</div>
+                    <div class="vital-sign-value">{{ record.weight|default:"-" }} kg</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">Height</div>
+                    <div class="vital-sign-value">{{ record.height|default:"-" }} cm</div>
+                </div>
+                <div class="vital-sign-item">
+                    <div class="vital-sign-label">O2 Saturation</div>
+                    <div class="vital-sign-value">{{ record.oxygen_saturation|default:"-" }}%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Details Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-notes-medical me-2"></i>Medical Details</h5>
+            </div>
+            <div class="info-section">
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Symptoms</h6>
+                    <p class="mb-0">{{ record.symptoms|default:"No symptoms recorded."|linebreaks }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Diagnosis</h6>
+                    <p class="mb-0">{{ record.diagnosis|default:"No diagnosis recorded."|linebreaks }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Treatment</h6>
+                    <p class="mb-0">{{ record.treatment|default:"No treatment recorded."|linebreaks }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Prescription</h6>
+                    <p class="mb-0">{{ record.prescription|default:"No prescription recorded."|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Follow-up Information Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-check me-2"></i>Follow-up Information</h5>
+            </div>
+            <div class="info-section">
+                <div class="info-row">
+                    <div class="info-label">Follow-up Date:</div>
+                    <div class="info-value">{{ record.follow_up_date|date:"Y-m-d"|default:"Not scheduled" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Follow-up Notes:</div>
+                    <div class="info-value">{{ record.follow_up_notes|default:"No follow-up notes."|linebreaks }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-file-medical-alt me-2"></i>Additional Information</h5>
+            </div>
+            <div class="info-section">
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Lab Results</h6>
+                    <pre class="bg-light p-3 rounded">{{ record.lab_results|default:"No lab results recorded." }}</pre>
+                </div>
+
+                {% if record.attachments %}
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Attachments</h6>
+                    <a href="{{ record.attachments.url }}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Download Attachment
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if record.notes %}
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">Additional Notes</h6>
+                    <p class="mb-0">{{ record.notes|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if record.updated_by %}
+        <!-- Update History Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Update History</h5>
+            </div>
+            <div class="info-section">
+                <div class="info-row">
+                    <div class="info-label">Last Updated By:</div>
+                    <div class="info-value">{{ record.updated_by.get_full_name }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Update Notes:</div>
+                    <div class="info-value">{{ record.update_notes|default:"No update notes provided." }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Medical Record | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .medical-record-update {
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    /* Enhanced Card Styles */
+    .update-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: none;
+        transition: all 0.3s ease;
+        background: white;
+        margin-bottom: 1.5rem;
+    }
+
+    .update-card:hover {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-section {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-title {
+        color: #2d3748;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 0.5rem;
+        color: #4299e1;
+    }
+
+    .form-control, 
+    .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .medical-record-update {
+            padding: 1rem 0.5rem;
+        }
+        .update-card {
+            border-radius: 0;
+        }
+        .form-section {
+            padding: 1rem;
+        }
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="medical-record-update">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mt-4">Update Medical Record</h1>
+            <a href="{% url 'patient_management:medical_record_detail' patient.pk medical_record.pk %}" 
+               class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Details
+            </a>
+        </div>
+
+        <div class="update-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>
+                    Patient: {{ patient.user.get_full_name }} ({{ patient.patient_id }})
+                </h5>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {{ form.patient }}
+
+                <!-- Update Notes Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-edit"></i>Update Information
+                    </h6>
+                    <div class="mb-3">
+                        <label for="{{ form.update_notes.id_for_label }}" class="form-label required-field">
+                            Reason for Update
+                        </label>
+                        {{ form.update_notes }}
+                        {% if form.update_notes.errors %}
+                        <div class="text-danger">{{ form.update_notes.errors }}</div>
+                        {% endif %}
+                        <small class="text-muted">Please provide a reason for updating this record.</small>
+                    </div>
+                </div>
+
+                <!-- Doctor Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-user-md"></i>Doctor Information
+                    </h6>
+                    <div class="mb-3">
+                        <label for="{{ form.doctor.id_for_label }}" class="form-label">Doctor</label>
+                        {{ form.doctor }}
+                        {% if form.doctor.errors %}
+                        <div class="text-danger">{{ form.doctor.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Vital Signs Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-heartbeat"></i>Vital Signs
+                    </h6>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="{{ form.temperature.id_for_label }}" class="form-label">Temperature (°C)</label>
+                            {{ form.temperature }}
+                            {% if form.temperature.errors %}
+                            <div class="text-danger">{{ form.temperature.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.blood_pressure.id_for_label }}" class="form-label">Blood Pressure</label>
+                            {{ form.blood_pressure }}
+                            {% if form.blood_pressure.errors %}
+                            <div class="text-danger">{{ form.blood_pressure.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.pulse_rate.id_for_label }}" class="form-label">Pulse Rate</label>
+                            {{ form.pulse_rate }}
+                            {% if form.pulse_rate.errors %}
+                            <div class="text-danger">{{ form.pulse_rate.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.respiratory_rate.id_for_label }}" class="form-label">Respiratory Rate</label>
+                            {{ form.respiratory_rate }}
+                            {% if form.respiratory_rate.errors %}
+                            <div class="text-danger">{{ form.respiratory_rate.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.weight.id_for_label }}" class="form-label">Weight (kg)</label>
+                            {{ form.weight }}
+                            {% if form.weight.errors %}
+                            <div class="text-danger">{{ form.weight.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.height.id_for_label }}" class="form-label">Height (cm)</label>
+                            {{ form.height }}
+                            {% if form.height.errors %}
+                            <div class="text-danger">{{ form.height.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.oxygen_saturation.id_for_label }}" class="form-label">O2 Saturation (%)</label>
+                            {{ form.oxygen_saturation }}
+                            {% if form.oxygen_saturation.errors %}
+                            <div class="text-danger">{{ form.oxygen_saturation.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Details Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-notes-medical"></i>Medical Details
+                    </h6>
+                    <div class="mb-3">
+                        <label for="{{ form.symptoms.id_for_label }}" class="form-label">Symptoms</label>
+                        {{ form.symptoms }}
+                        {% if form.symptoms.errors %}
+                        <div class="text-danger">{{ form.symptoms.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.diagnosis.id_for_label }}" class="form-label">Diagnosis</label>
+                        {{ form.diagnosis }}
+                        {% if form.diagnosis.errors %}
+                        <div class="text-danger">{{ form.diagnosis.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.treatment.id_for_label }}" class="form-label">Treatment</label>
+                        {{ form.treatment }}
+                        {% if form.treatment.errors %}
+                        <div class="text-danger">{{ form.treatment.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.prescription.id_for_label }}" class="form-label">Prescription</label>
+                        {{ form.prescription }}
+                        {% if form.prescription.errors %}
+                        <div class="text-danger">{{ form.prescription.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Follow-up Information Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-calendar-check"></i>Follow-up Information
+                    </h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.follow_up_date.id_for_label }}" class="form-label">Follow-up Date</label>
+                            {{ form.follow_up_date }}
+                            {% if form.follow_up_date.errors %}
+                            <div class="text-danger">{{ form.follow_up_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.follow_up_notes.id_for_label }}" class="form-label">Follow-up Notes</label>
+                            {{ form.follow_up_notes }}
+                            {% if form.follow_up_notes.errors %}
+                            <div class="text-danger">{{ form.follow_up_notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <h6 class="section-title">
+                        <i class="fas fa-file-medical-alt"></i>Additional Information
+                    </h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.lab_results.id_for_label }}" class="form-label">Lab Results</label>
+                            {{ form.lab_results }}
+                            {% if form.lab_results.errors %}
+                            <div class="text-danger">{{ form.lab_results.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.attachments.id_for_label }}" class="form-label">Attachments</label>
+                            {{ form.attachments }}
+                            {% if form.attachments.errors %}
+                            <div class="text-danger">{{ form.attachments.errors }}</div>
+                            {% endif %}
+                            {% if medical_record.attachments %}
+                            <div class="mt-2">
+                                <small class="text-muted">Current file: {{ medical_record.attachments.name }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                        <div class="text-danger">{{ form.notes.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="form-section">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <a href="{% url 'patient_management:medical_record_detail' patient.pk medical_record.pk %}" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        
+        // Form submission handling
+        form.addEventListener('submit', function(e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Find first invalid field and scroll to it
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving Changes...';
+            }
+            
+            form.classList.add('was-validated');
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .booking-container {
+        padding: 15px;
+        margin-top: 15px;
+    }
+
+    .emergency-alert {
+        border-radius: 10px;
+        margin-bottom: 20px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .emergency-alert i {
+        font-size: 1.5rem;
+        color: #dc3545;
+    }
+
+    .booking-card {
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .booking-header {
+        padding: 15px;
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+
+    .booking-header h3 {
+        font-size: 1.25rem;
+        margin: 0;
+        word-wrap: break-word;
+    }
+
+    .booking-form {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 16px; /* Better for mobile touch */
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,...");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+    }
+
+    .required:after {
+        content: " *";
+        color: #dc3545;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        flex-direction: column; /* Stack buttons on mobile */
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 500;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 768px) {
+        .booking-container {
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .booking-header {
+            padding: 20px;
+        }
+
+        .booking-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .booking-form {
+            padding: 30px;
+        }
+
+        .button-group {
+            flex-direction: row; /* Horizontal buttons on desktop */
+        }
+
+        .btn {
+            width: auto;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container booking-container">
+    <!-- Emergency Warning -->
+    <div class="alert alert-danger emergency-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div>
+            <strong>Emergency?</strong> If this is a medical emergency, please call emergency services 
+            or visit the nearest hospital immediately.
+            {% if hospital.phone_number and hospital.phone_number != "Not Available" %}
+                <br>Hospital contact: {{ hospital.phone_number }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="booking-card">
+        <div class="booking-header bg-primary text-white">
+            <h3 class="mb-0">Book Appointment at {{ hospital.name }}</h3>
+        </div>
+        <div class="booking-form">
+            <form method="post" class="staffForm">
+                {% csrf_token %}
+                
+                <!-- Department Dropdown -->
+                <div class="form-group">
+                    <label class="form-label required">Department</label>
+                    <select name="department" class="form-control" required>
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Date Dropdown -->
+                <div class="form-group">
+                    <label class="form-label required">Appointment Date</label>
+                    <select name="appointment_date" class="form-control" required>
+                        <option value="">Select Date</option>
+                        {% for date in available_dates %}
+                            <option value="{{ date|date:'Y-m-d' }}">
+                                {{ date|date:"l, F j, Y" }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Time Slot Selection -->
+                <div class="form-group">
+                    <label class="form-label required">Preferred Time</label>
+                    <select name="time_slot" class="form-control" required>
+                        <option value="">Select Time</option>
+                        {% for slot in available_time_slots %}
+                            <option value="{{ slot.value }}">{{ slot.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Reason for Visit -->
+                <div class="form-group">
+                    <label class="form-label required">Reason for Visit</label>
+                    <textarea name="reason" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                    </button>
+                    <a href="{% url 'home:hospital_search' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

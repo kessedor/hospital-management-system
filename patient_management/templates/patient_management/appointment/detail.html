@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Appointment Details | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .appointment-detail-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Card Styling */
+    .detail-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        border: none;
+        padding: 1.25rem;
+        color: white;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Info Section */
+    .info-section {
+        padding: 1.5rem;
+    }
+
+    .info-title {
+        color: #2d3748;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Table Styling */
+    .info-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .info-table th {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #4a5568;
+        padding: 1rem;
+        width: 30%;
+    }
+
+    .info-table td {
+        color: #2d3748;
+        padding: 1rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    /* Links */
+    .patient-link {
+        color: #4299e1;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .patient-link:hover {
+        color: #2b6cb0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .appointment-detail-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .detail-card {
+            border-radius: 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-table {
+            display: block;
+        }
+
+        .info-table tr {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .info-table th,
+        .info-table td {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .info-table th {
+            padding-bottom: 0.25rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .appointment-detail-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .detail-card {
+            background: #2d3748;
+        }
+
+        .info-title {
+            color: #e2e8f0;
+        }
+
+        .info-table th {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .info-table td {
+            color: #f7fafc;
+        }
+
+        .patient-link {
+            color: #63b3ed;
+        }
+
+        .patient-link:hover {
+            color: #90cdf4;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="appointment-detail-container">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="detail-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Appointment Details
+                </h4>
+                <div class="action-buttons">
+                    <a href="{% url 'patient_management:appointment_update' appointment.pk %}" 
+                       class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </a>
+                    <a href="{% url 'patient_management:appointment_list' %}" 
+                       class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <div class="detail-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    </div>
+                    <div class="info-section">
+                        <table class="info-table">
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <span class="badge bg-{% if appointment.status == 'SCHEDULED' %}primary
+                                                     {% elif appointment.status == 'CONFIRMED' %}success
+                                                     {% elif appointment.status == 'CANCELLED' %}danger
+                                                     {% else %}secondary{% endif %}">
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date & Time</th>
+                                <td>{{ appointment.appointment_datetime|date:"F d, Y h:i A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Duration</th>
+                                <td>{{ appointment.duration }} minutes</td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>{{ appointment.get_appointment_type_display }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="detail-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-users me-2"></i>People Involved</h5>
+                    </div>
+                    <div class="info-section">
+                        <table class="info-table">
+                            <tr>
+                                <th>Patient</th>
+                                <td>
+                                    <a href="{% url 'patient_management:patient_detail' appointment.patient.pk %}" 
+                                       class="patient-link">
+                                        {{ appointment.patient.get_full_name }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Doctor</th>
+                                <td>{{ appointment.doctor.get_full_name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-clipboard me-2"></i>Additional Information</h5>
+            </div>
+            <div class="info-section">
+                <table class="info-table">
+                    <tr>
+                        <th>Reason</th>
+                        <td>{{ appointment.reason|linebreaks }}</td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th>
+                        <td>{{ appointment.notes|default:"No additional notes"|linebreaks }}</td>
+                    </tr>
+                </table>
+
+                {% if appointment.status == 'SCHEDULED' %}
+                <div class="mt-4">
+                    <form method="post" 
+                          action="{% url 'patient_management:appointment_cancel' appointment.pk %}" 
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-times me-2"></i>Cancel Appointment
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhanced cancel confirmation
+        const cancelForm = document.querySelector('form');
+        if (cancelForm) {
+            cancelForm.addEventListener('submit', function(e) {
+                if (!confirm('Are you sure you want to cancel this appointment?')) {
+                    e.preventDefault();
+                    return false;
+                }
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            });
+        }
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

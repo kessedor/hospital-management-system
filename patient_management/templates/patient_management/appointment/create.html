@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Schedule Appointment | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .appointment-create-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Card Styling */
+    .appointment-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .appointment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card Header */
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        border: none;
+        padding: 1.5rem;
+        color: white;
+    }
+
+    /* Form Styling */
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, 
+    .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Select2 Enhancements */
+    .select2-container--bootstrap4 .select2-selection {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        height: calc(2.5rem + 2px);
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single {
+        padding: 0.75rem 1rem;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+        height: calc(2.5rem + 2px);
+    }
+
+    /* Error States */
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .is-invalid {
+        border-color: #f56565;
+    }
+
+    /* Button Styling */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .appointment-create-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .appointment-card {
+            border-radius: 0;
+        }
+
+        .card-header {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .appointment-create-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .appointment-card {
+            background: #2d3748;
+        }
+
+        .form-label {
+            color: #e2e8f0;
+        }
+
+        .form-control,
+        .form-select,
+        .select2-container--bootstrap4 .select2-selection {
+            background-color: #1a202c;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .text-danger {
+            color: #fc8181 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="appointment-create-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="appointment-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            Schedule New Appointment
+                        </h4>
+                        <a href="{% url 'patient_management:appointment_list' %}" 
+                           class="btn btn-sm btn-light">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Your existing form fields with enhanced styling -->
+                            <!-- ... -->
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'patient_management:appointment_list' %}" 
+                                   class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Schedule Appointment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Select2 with enhanced mobile support
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            width: '100%',
+            placeholder: 'Select an option',
+            allowClear: true
+        });
+
+        // Enhanced Form Validation
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Scroll to first invalid field
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            } else {
+                // Add loading state to submit button
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            }
+            
+            form.classList.add('was-validated');
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            // Prevent zoom on iOS
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

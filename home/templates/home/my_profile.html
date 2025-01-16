@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .profile-container {
+        padding: 15px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #2d3748;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    /* Medical Info Card */
+    .medical-info-card {
+        background: #f8fafc;
+    }
+
+    .medical-info-card .card-title {
+        color: #2d3748;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 10px;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+        .col-md-6 {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+    }
+
+    /* Form Group Spacing */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Read-only Fields */
+    .form-control[readonly] {
+        background-color: #f8fafc;
+        cursor: not-allowed;
+    }
+
+    /* Alert Styles */
+    .alert {
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container">
+    <h2 class="page-title">My Profile</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" 
+                                       value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" 
+                                       value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" 
+                                       value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone_number" 
+                                       value="{{ patient.phone_number }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" name="address" rows="3">{{ patient.address }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card medical-info-card">
+                <div class="card-body">
+                    <h5 class="card-title">Medical Information</h5>
+                    <div class="form-group">
+                        <label class="form-label">Blood Type</label>
+                        <input type="text" class="form-control" value="{{ patient.blood_type }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Allergies</label>
+                        <textarea class="form-control" rows="3" readonly>{{ patient.allergies }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

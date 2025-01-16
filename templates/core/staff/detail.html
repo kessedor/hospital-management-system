@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Staff Details</h3>
+                        <div>
+                            <a href="{% url 'staff_update' staff.employee_id %}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'staff_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Personal Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Name:</th>
+                                    <td>{{ staff.user.get_full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Employee ID:</th>
+                                    <td>{{ staff.employee_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ staff.user.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone:</th>
+                                    <td>{{ staff.phone_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        <span class="badge {% if staff.status == 'ACTIVE' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ staff.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Professional Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Role:</th>
+                                    <td>{{ staff.get_role_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Department:</th>
+                                    <td>{{ staff.get_department_display }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Designation:</th>
+                                    <td>{{ staff.designation }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Experience:</th>
+                                    <td>{{ staff.experience_years }} years</td>
+                                </tr>
+                                <tr>
+                                    <th>Qualification:</th>
+                                    <td>{{ staff.qualification }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if staff.role == 'DOCTOR' and assigned_patients %}
+                    <div class="mt-4">
+                        <h5>Assigned Patients</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Admission Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in assigned_patients %}
+                                <tr>
+                                    <td>{{ patient.patient_id }}</td>
+                                    <td>{{ patient.user.get_full_name }}</td>
+                                    <td>{{ patient.get_status_display }}</td>
+                                    <td>{{ patient.admission_date|date:"M d, Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

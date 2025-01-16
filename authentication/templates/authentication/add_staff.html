@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .form-section h4 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eee;
+    }
+
+    .schedule-day {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .required-field::after {
+        content: "*";
+        color: red;
+        margin-left: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'authentication/includes/hospital_navbar.html' %}
+
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>{% if staff %}Edit Staff Member{% else %}Add New Staff Member{% endif %}</h2>
+        </div>
+    </div>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        <!-- Personal Information -->
+        <div class="form-section">
+            <h4>Personal Information</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label required-field">First Name</label>
+                    {{ user_form.first_name }}
+                    {% if user_form.first_name.errors %}
+                    <div class="invalid-feedback">{{ user_form.first_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Last Name</label>
+                    {{ user_form.last_name }}
+                    {% if user_form.last_name.errors %}
+                    <div class="invalid-feedback">{{ user_form.last_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Username</label>
+                    {{ user_form.username }}
+                    {% if user_form.username.errors %}
+                    <div class="invalid-feedback">{{ user_form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    {{ user_form.email }}
+                    {% if user_form.email.errors %}
+                    <div class="invalid-feedback">{{ user_form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                {% if not staff %}
+                <div class="col-md-6">
+                    <label class="form-label required-field">Password</label>
+                    {{ user_form.password1 }}
+                    {% if user_form.password1.errors %}
+                    <div class="invalid-feedback">{{ user_form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Confirm Password</label>
+                    {{ user_form.password2 }}
+                    {% if user_form.password2.errors %}
+                    <div class="invalid-feedback">{{ user_form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="form-section">
+            <h4>Professional Information</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label required-field">Employee ID</label>
+                    {{ staff_form.employee_id }}
+                    {% if staff_form.employee_id.errors %}
+                    <div class="invalid-feedback">{{ staff_form.employee_id.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Role</label>
+                    {{ staff_form.role }}
+                    {% if staff_form.role.errors %}
+                    <div class="invalid-feedback">{{ staff_form.role.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Department</label>
+                    {{ staff_form.department }}
+                    {% if staff_form.department.errors %}
+                    <div class="invalid-feedback">{{ staff_form.department.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Specialization</label>
+                    {{ staff_form.specialization }}
+                    {% if staff_form.specialization.errors %}
+                    <div class="invalid-feedback">{{ staff_form.specialization.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="form-section">
+            <h4>Additional Information</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label required-field">Qualification</label>
+                    {{ staff_form.qualification }}
+                    {% if staff_form.qualification.errors %}
+                    <div class="invalid-feedback">{{ staff_form.qualification.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Experience (Years)</label>
+                    {{ staff_form.experience_years }}
+                    {% if staff_form.experience_years.errors %}
+                    <div class="invalid-feedback">{{ staff_form.experience_years.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Joining Date</label>
+                    {{ staff_form.joining_date }}
+                    {% if staff_form.joining_date.errors %}
+                    <div class="invalid-feedback">{{ staff_form.joining_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Status</label>
+                    {{ staff_form.status }}
+                    {% if staff_form.status.errors %}
+                    <div class="invalid-feedback">{{ staff_form.status.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label required-field">Emergency Contact</label>
+                    {{ staff_form.emergency_contact }}
+                    {% if staff_form.emergency_contact.errors %}
+                    <div class="invalid-feedback">{{ staff_form.emergency_contact.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label required-field">Address</label>
+                    {{ staff_form.address }}
+                    {% if staff_form.address.errors %}
+                    <div class="invalid-feedback">{{ staff_form.address.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="form-section">
+            <h4>Weekly Schedule</h4>
+            <div class="row">
+                {% for field in schedule_form %}
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div class="schedule-day">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    {% if staff %}Update Staff Member{% else %}Add Staff Member{% endif %}
+                </button>
+                <a href="{% url 'staff_management' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Schedule handling
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const schedule = {};
+        document.querySelectorAll('.schedule-day select').forEach(select => {
+            if (select.value) {
+                schedule[select.name] = select.value;
+            }
+        });
+        document.querySelector('[name="schedule"]').value = JSON.stringify(schedule);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Leave Requests - NHRS{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-minus me-2"></i>Leave Requests</h2>
+        <a href="{% url 'leave_request' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Request Leave
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Staff Member</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leave_requests %}
+                <tr>
+                    <td>{{ leave.staff.user.get_full_name }}</td>
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+                    <td>{{ leave.end_date|timeuntil:leave.start_date }}</td>
+                    <td>
+                        <span class="badge bg-{% if leave.status == 'APPROVED' %}success{% elif leave.status == 'REJECTED' %}danger{% else %}warning{% endif %}">
+                            {{ leave.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if leave.status == 'PENDING' %}
+                            <a href="{% url 'leave_approve' leave.pk %}" class="btn btn-sm btn-success">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            <a href="{% url 'leave_reject' leave.pk %}" class="btn btn-sm btn-danger ms-1">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <p class="text-muted mb-0">No leave requests found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

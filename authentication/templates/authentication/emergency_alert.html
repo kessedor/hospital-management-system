@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emergency Alert</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .emergency-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .emergency-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            width: 100%;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+        }
+        .emergency-button:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(220, 53, 69, 0.3);
+        }
+        .emergency-button:active {
+            transform: translateY(1px);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #343a40;
+        }
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+        }
+        select:focus, textarea:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .location-status {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nearest-hospitals {
+            margin-top: 25px;
+        }
+        .hospital-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .hospital-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .alert-sent {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(21, 87, 36, 0.1);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(114, 28, 36, 0.1);
+        }
+
+        /* Loading Animation */
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 3px solid #dc3545;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Enhancements */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .emergency-container {
+                padding: 15px;
+                margin: 10px;
+            }
+            .emergency-button {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            select, textarea {
+                padding: 10px;
+                font-size: 16px;
+            }
+            .hospital-item {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Touch Device Enhancements */
+        @media (hover: none) {
+            .emergency-button:hover {
+                transform: none;
+            }
+            .hospital-item:hover {
+                transform: none;
+            }
+            select, textarea {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+
+        /* Accessibility Improvements */
+        .emergency-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.5);
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-container">
+        <h1>Emergency Alert</h1>
+        
+        <button class="emergency-button" id="emergencyButton" aria-label="Send Emergency Alert">
+            SEND EMERGENCY ALERT
+        </button>
+
+        <div class="loading" id="loading" role="status" aria-live="polite">
+            Detecting your location...
+        </div>
+
+        <form id="emergencyForm" style="display: none;">
+            <div class="form-group">
+                <label for="emergencyType">Emergency Type:</label>
+                <select id="emergencyType" required aria-required="true">
+                    <option value="">Select Emergency Type</option>
+                    <option value="ACCIDENT">Accident</option>
+                    <option value="HEART_ATTACK">Heart Attack</option>
+                    <option value="STROKE">Stroke</option>
+                    <option value="BREATHING">Breathing Difficulty</option>
+                    <option value="INJURY">Severe Injury</option>
+                    <option value="OTHER">Other Emergency</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" rows="4" 
+                    placeholder="Describe the emergency situation..." 
+                    required 
+                    aria-required="true"></textarea>
+            </div>
+
+            <div class="location-status" id="locationStatus" role="alert" aria-live="polite">
+                Getting your location...
+            </div>
+
+            <div class="nearest-hospitals" id="nearestHospitals" aria-live="polite">
+                <!-- Hospitals will be listed here -->
+            </div>
+
+            <button type="submit" class="emergency-button" aria-label="Confirm and Send Alert">
+                CONFIRM AND SEND ALERT
+            </button>
+        </form>
+
+        <div class="alert-sent" id="alertSent" role="alert">
+            Alert sent successfully! Nearby hospitals have been notified.
+            <br><br>
+            <strong>Help is on the way. Please stay at your current location.</strong>
+        </div>
+    </div>
+
+    <script>
+        let userLocation = null;
+
+        document.getElementById('emergencyButton').onclick = function() {
+            this.style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            getLocation();
+        };
+
+        function getLocation() {
+            const locationStatus = document.getElementById('locationStatus');
+            
+            if (!navigator.geolocation) {
+                locationStatus.textContent = 'Location detection is not supported by your browser';
+                locationStatus.className += ' error-message';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    console.log('Location detected:', userLocation);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('emergencyForm').style.display = 'block';
+                    locationStatus.textContent = 'Location detected successfully!';
+                    locationStatus.style.backgroundColor = '#d4edda';
+                    locationStatus.style.color = '#155724';
+                    findNearbyHospitals(userLocation);
+                },
+                function(error) {
+                    console.error('Location error:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    locationStatus.textContent = 'Unable to detect location. Please allow location access.';
+                    locationStatus.className += ' error-message';
+                }
+            );
+        }
+
+        function findNearbyHospitals(location) {
+            const hospitalsList = document.getElementById('nearestHospitals');
+            hospitalsList.innerHTML = '<h3>Searching for nearby hospitals...</h3>';
+
+            const url = `/api/auth/api/hospitals/nearby/?lat=${location.latitude}&lng=${location.longitude}`;
+            console.log('Fetching hospitals from:', url);
+
+            fetch(url)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    
+                    if (data.error) {
+                        hospitalsList.innerHTML = `<h3>Error: ${data.message}</h3>`;
+                        return;
+                    }
+
+                    if (!data.length) {
+                        hospitalsList.innerHTML = '<h3>No hospitals found in your area</h3>';
+                        return;
+                    }
+
+                    hospitalsList.innerHTML = '<h3>Nearest Hospitals:</h3>';
+                    data.forEach(hospital => {
+                        hospitalsList.innerHTML += `
+                            <div class="hospital-item" role="listitem">
+                                <strong>${hospital.name}</strong><br>
+                                <span class="hospital-info">Distance: ${hospital.distance.toFixed(1)} km</span><br>
+                                <span class="hospital-info">Available Beds: ${hospital.available_beds}</span><br>
+                                <span class="hospital-info">Phone: ${hospital.phone}</span><br>
+                                <span class="hospital-status">Status: ${hospital.emergency_status}</span>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hospitalsList.innerHTML = `
+                        <div class="error-message" role="alert">
+                            <h3>Error finding nearby hospitals</h3>
+                            <p>Please try again later or contact emergency services directly.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        document.getElementById('emergencyForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const alertData = {
+                emergency_type: document.getElementById('emergencyType').value,
+                description: document.getElementById('description').value,
+                location: userLocation
+            };
+
+            console.log('Sending alert data:', alertData);
+
+            fetch('/api/auth/api/emergency-alerts/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(alertData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Alert response:', data);
+                if (data.success) {
+                    document.getElementById('emergencyForm').style.display = 'none';
+                    document.getElementById('alertSent').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error sending alert:', error);
+                alert('Error sending alert. Please try again or contact emergency services directly.');
+            });
+        };
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

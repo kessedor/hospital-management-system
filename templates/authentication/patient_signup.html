@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Patient Registration{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .signup-container {
+        min-height: calc(100vh - 80px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 2rem 0;
+    }
+
+    /* Card Styling */
+    .signup-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+
+    .signup-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header Styling */
+    .card-header {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        padding: 2rem 1.5rem;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{% static "images/pattern.svg" %}') center/cover;
+        opacity: 0.1;
+    }
+
+    .card-title {
+        position: relative;
+        color: white;
+        font-weight: 600;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background-color: #fff;
+    }
+
+    .form-control:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Password Strength Indicator */
+    .password-strength {
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 0.5rem;
+        background: #edf2f7;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .strength-weak { background-color: #fc8181; width: 33%; }
+    .strength-medium { background-color: #f6e05e; width: 66%; }
+    .strength-strong { background-color: #68d391; width: 100%; }
+
+    /* Enhanced Button */
+    .btn-register {
+        padding: 0.875rem 2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    }
+
+    .btn-register::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: all 0.3s ease;
+    }
+
+    .btn-register:hover::after {
+        animation: shine 1.5s ease-out infinite;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    /* Form Validation Styling */
+    .form-control.is-invalid {
+        border-color: #fc8181;
+        background-image: none;
+    }
+
+    .invalid-feedback {
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    .was-validated .form-control:invalid ~ .invalid-feedback {
+        display: block;
+    }
+
+    /* Loading State */
+    .loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Social Login Buttons */
+    .social-login {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-social {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: white;
+        color: #4a5568;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        margin-bottom: 1rem;
+    }
+
+    .btn-social:hover {
+        background: #f7fafc;
+        transform: translateY(-2px);
+    }
+
+    .btn-social img {
+        width: 24px;
+        height: 24px;
+        margin-right: 0.75rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .signup-container {
+            padding: 1rem;
+        }
+
+        .card-header {
+            padding: 1.5rem 1rem;
+        }
+
+        .btn-register {
+            width: 100%;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .signup-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .signup-card {
+            background: rgba(45, 55, 72, 0.95);
+        }
+
+        .form-label {
+            color: #e2e8f0;
+        }
+
+        .form-control {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .form-control:focus {
+            border-color: #4299e1;
+            background-color: #2d3748;
+        }
+
+        .btn-social {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .btn-social:hover {
+            background: #4a5568;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="signup-card">
+                    <div class="card-header text-center">
+                        <h3 class="card-title">Patient Registration</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            
+                            <!-- Password Strength Indicator -->
+                            <div class="password-strength">
+                                <div class="password-strength-bar"></div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-register">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </button>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <p class="mb-0">Already have an account? 
+                                    <a href="{% url 'authentication:login' %}" class="text-primary">Login here</a>
+                                </p>
+                            </div>
+
+                            <!-- Social Login Section -->
+                            <div class="social-login">
+                                <div class="text-center mb-3">
+                                    <span class="text-muted">Or register with</span>
+                                </div>
+                                <button type="button" class="btn-social">
+                                    <img src="{% static 'images/google.svg' %}" alt="Google">
+                                    Continue with Google
+                                </button>
+                                <button type="button" class="btn-social">
+                                    <img src="{% static 'images/facebook.svg' %}" alt="Facebook">
+                                    Continue with Facebook
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const passwordInput = form.querySelector('input[type="password"]');
+        const strengthBar = document.querySelector('.password-strength-bar');
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/\d/)) strength++;
+            if (password.match(/[^a-zA-Z\d]/)) strength++;
+            return strength;
+        }
+
+        // Update password strength indicator
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const strength = checkPasswordStrength(this.value);
+                strengthBar.className = 'password-strength-bar';
+                if (strength >= 3) strengthBar.classList.add('strength-strong');
+                else if (strength >= 2) strengthBar.classList.add('strength-medium');
+                else if (strength >= 1) strengthBar.classList.add('strength-weak');
+            });
+        }
+
+        // Form validation
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            }
+            form.classList.add('was-validated');
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

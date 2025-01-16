@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Register New Patient{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .registration-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 2rem 1rem;
+    }
+
+    /* Card Styling */
+    .registration-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .registration-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card Header */
+    .card-header {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{% static "images/pattern.svg" %}') center/cover;
+        opacity: 0.1;
+    }
+
+    .card-header h3 {
+        color: white;
+        margin: 0;
+        position: relative;
+        font-weight: 600;
+    }
+
+    /* Section Headers */
+    .section-header {
+        color: #2d3748;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .select2-container--bootstrap4 .select2-selection {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+        background-color: #fff;
+    }
+
+    .form-control:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Select2 Enhancements */
+    .select2-container--bootstrap4 .select2-selection--single {
+        height: calc(1.5em + 1.5rem + 4px);
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+        line-height: calc(1.5em + 1.5rem);
+        padding-left: 0.5rem;
+    }
+
+    /* Button Styling */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+    }
+
+    .btn-secondary {
+        background: #718096;
+        border: none;
+    }
+
+    /* Validation Styles */
+    .was-validated .form-control:valid {
+        border-color: #48bb78;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2348bb78' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    }
+
+    .was-validated .form-control:invalid {
+        border-color: #f56565;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f56565' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23f56565' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .registration-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .registration-card {
+            border-radius: 15px;
+        }
+
+        .card-header {
+            padding: 1.25rem;
+        }
+
+        .form-control, .select2-container--bootstrap4 .select2-selection {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .registration-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .registration-card {
+            background: rgba(45, 55, 72, 0.95);
+        }
+
+        .section-header {
+            color: #e2e8f0;
+            border-bottom-color: #4a5568;
+        }
+
+        .form-label {
+            color: #e2e8f0;
+        }
+
+        .form-control {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .form-control:focus {
+            background-color: #2d3748;
+            border-color: #4299e1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="registration-card">
+                    <div class="card-header">
+                        <h3 class="text-center">Register New Patient</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="POST" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Personal Information Section -->
+<h4 class="section-header">
+    <i class="fas fa-user me-2"></i>Personal Information
+</h4>
+<div class="row g-3">
+    <div class="col-md-6">
+        {{ user_form.first_name|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ user_form.last_name|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ user_form.email|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ user_form.phone_number|as_crispy_field }}
+    </div>
+</div>
+
+<!-- Medical Information Section -->
+<h4 class="section-header mt-4">
+    <i class="fas fa-heartbeat me-2"></i>Medical Information
+</h4>
+<div class="row g-3">
+    <div class="col-md-4">
+        {{ form.date_of_birth|as_crispy_field }}
+    </div>
+    <div class="col-md-4">
+        {{ form.gender|as_crispy_field }}
+    </div>
+    <div class="col-md-4">
+        {{ form.blood_group|as_crispy_field }}
+    </div>
+</div>
+
+<!-- Contact Information Section -->
+<h4 class="section-header mt-4">
+    <i class="fas fa-address-card me-2"></i>Contact Information
+</h4>
+<div class="row g-3">
+    <div class="col-12">
+        {{ form.address|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ form.emergency_contact|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ form.emergency_contact_relation|as_crispy_field }}
+    </div>
+</div>
+
+<!-- Medical History Section -->
+<h4 class="section-header mt-4">
+    <i class="fas fa-notes-medical me-2"></i>Medical History
+</h4>
+<div class="row g-3">
+    <div class="col-12">
+        {{ form.medical_history|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ form.allergies|as_crispy_field }}
+    </div>
+    <div class="col-md-6">
+        {{ form.notes|as_crispy_field }}
+    </div>
+</div>
+                            <!-- ... rest of the form sections ... -->
+
+                            <!-- Form Actions -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{% url 'patient_management:patient_list' %}" 
+                                   class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Register Patient
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Select2
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            width: '100%',
+            placeholder: 'Select an option'
+        });
+
+        // Enhanced Form Validation
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Scroll to first invalid field
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                // Add loading state to submit button
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            }
+            
+            form.classList.add('was-validated');
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.checkValidity()) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                } else {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                }
+            });
+        });
+
+        // Date of birth validation
+        const dobInput = document.querySelector('input[name="date_of_birth"]');
+        if (dobInput) {
+            dobInput.max = new Date().toISOString().split('T')[0];
+            
+            dobInput.addEventListener('change', function() {
+                const today = new Date();
+                const dob = new Date(this.value);
+                
+                if (dob > today) {
+                    this.setCustomValidity('Date of birth cannot be in the future');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            // Prevent zoom on iOS
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

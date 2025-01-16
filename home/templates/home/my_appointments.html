@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .appointments-container {
+        padding: 15px;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+
+    .header-title {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+
+    .new-appointment-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    /* Alert Styles */
+    .alert {
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        margin: 0;
+        border-radius: 8px;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    /* Badge Styles */
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.5em 0.75em;
+        border-radius: 6px;
+    }
+
+    /* Button Styles */
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: #343a40;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .card-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch !important;
+        }
+
+        .new-appointment-btn {
+            width: 100%;
+        }
+
+        /* Convert table to cards for mobile */
+        .table-responsive {
+            border: none;
+        }
+
+        .table, .table thead, .table tbody, .table tr, .table td {
+            display: block;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tr {
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .table td {
+            padding: 0.5rem 0;
+            border: none;
+            text-align: left !important;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .btn-sm {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container appointments-container">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="header-title">My Appointments</h3>
+            <a href="{% url 'home:hospital_search' %}" class="btn btn-light new-appointment-btn">
+                <i class="fas fa-plus-circle me-2"></i>Book New Appointment
+            </a>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Hospital</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                            <tr>
+                                <td data-label="Hospital">{{ appointment.hospital.name }}</td>
+                                <td data-label="Department">{{ appointment.department.name }}</td>
+                                <td data-label="Date">{{ appointment.appointment_date|date:"l, F j, Y" }}</td>
+                                <td data-label="Time">{{ appointment.get_time_slot_display }}</td>
+                                <td data-label="Status">
+                                    <span class="badge {% if appointment.status == 'PENDING' %}bg-warning
+                                                      {% elif appointment.status == 'CONFIRMED' %}bg-success
+                                                      {% elif appointment.status == 'CANCELLED' %}bg-danger
+                                                      {% else %}bg-secondary{% endif %}">
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </td>
+                                <td data-label="Actions">
+                                    {% if appointment.status == 'PENDING' or appointment.status == 'CONFIRMED' %}
+                                        {% if appointment.appointment_date >= today %}
+                                            <button class="btn btn-sm btn-danger" 
+                                                    onclick="cancelAppointment({{ appointment.id }})">
+                                                <i class="fas fa-times-circle me-1"></i>Cancel
+                                            </button>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <h4>No appointments found</h4>
+                    <p>You haven't booked any appointments yet.</p>
+                    <a href="{% url 'home:hospital_search' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Book Your First Appointment
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function cancelAppointment(appointmentId) {
+    if (confirm('Are you sure you want to cancel this appointment?')) {
+        window.location.href = `/appointment/${appointmentId}/cancel/`;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lab Result Details | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .lab-result-detail-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Card Styling */
+    .detail-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        border: none;
+        padding: 1.25rem;
+        color: white;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Info Section */
+    .info-section {
+        padding: 1.5rem;
+    }
+
+    .info-title {
+        color: #2d3748;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Table Styling */
+    .info-table {
+        margin: 0;
+        width: 100%;
+    }
+
+    .info-table th {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #4a5568;
+        width: 30%;
+        padding: 1rem;
+    }
+
+    .info-table td {
+        color: #2d3748;
+        padding: 1rem;
+    }
+
+    /* Button Styling */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .lab-result-detail-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .detail-card {
+            border-radius: 0;
+        }
+
+        .info-table {
+            display: block;
+        }
+
+        .info-table tr {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .info-table th,
+        .info-table td {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .info-table th {
+            padding-bottom: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lab-result-detail-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="detail-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-flask me-2"></i>
+                            Lab Result Details
+                        </h4>
+                        <a href="{% url 'patient_management:medical_record_detail' lab_result.medical_record.pk %}" 
+                           class="btn btn-sm btn-light">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                    <div class="info-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="info-title">Test Information</h5>
+                                <table class="info-table">
+                                    <tr>
+                                        <th>Test Name</th>
+                                        <td>{{ lab_result.test_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Category</th>
+                                        <td>{{ lab_result.test_category }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Result Value</th>
+                                        <td>{{ lab_result.result_value }} {{ lab_result.unit }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Reference Range</th>
+                                        <td>{{ lab_result.reference_range }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="info-title">Additional Information</h5>
+                                <table class="info-table">
+                                    <tr>
+                                        <th>Date Added</th>
+                                        <td>{{ lab_result.created_at|date:"F d, Y h:i A" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Performed By</th>
+                                        <td>{{ lab_result.performed_by.get_full_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Notes</th>
+                                        <td>{{ lab_result.notes|default:"No additional notes"|linebreaks }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        {% if lab_result.report_file %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="info-title">Attached Report</h5>
+                                <div class="mt-2">
+                                    <a href="{{ lab_result.report_file.url }}" class="btn btn-primary" target="_blank">
+                                        <i class="fas fa-download"></i> Download Report
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

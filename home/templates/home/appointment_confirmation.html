@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .confirmation-container {
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .confirmation-card {
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .confirmation-header {
+        padding: 15px;
+        background: linear-gradient(45deg, #28a745, #20c997);
+    }
+
+    .confirmation-header h3 {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+
+    .details-list {
+        padding-left: 0;
+        list-style: none;
+    }
+
+    .details-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .details-list li:last-child {
+        border-bottom: none;
+    }
+
+    .alert {
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+        flex: 1;
+        min-width: 150px;
+        white-space: nowrap;
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 768px) {
+        .confirmation-container {
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .confirmation-header {
+            padding: 20px;
+        }
+
+        .confirmation-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .action-buttons {
+            flex-wrap: nowrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container confirmation-container">
+    <div class="confirmation-card">
+        <div class="confirmation-header bg-success text-white">
+            <h3 class="mb-0">Appointment Booked Successfully!</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <h4 class="h5">Appointment Details:</h4>
+                <ul class="details-list">
+                    <li><strong>Hospital:</strong> {{ appointment.hospital.name }}</li>
+                    <li><strong>Department:</strong> {{ appointment.department.name }}</li>
+                    <li><strong>Date:</strong> {{ appointment.appointment_date|date:"l, F j, Y" }}</li>
+                    <li><strong>Time:</strong> {{ appointment.get_time_slot_display }}</li>
+                    <li><strong>Status:</strong> {{ appointment.get_status_display }}</li>
+                    {% if appointment.hospital.phone_number %}
+                        <li><strong>Hospital Contact:</strong> {{ appointment.hospital.phone_number }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h5 class="h6">Important Notes:</h5>
+                <ul class="details-list">
+                    <li>Please arrive 15 minutes before your appointment time</li>
+                    <li>Bring any relevant medical records</li>
+                    <li>Bring valid ID and insurance information</li>
+                    {% if appointment.hospital.phone_number %}
+                        <li>For any queries, contact the hospital at: {{ appointment.hospital.phone_number }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="action-buttons mt-4">
+                <a href="{% url 'home:my_appointments' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check me-2"></i>View My Appointments
+                </a>
+                <a href="{% url 'home:hospital_search' %}" class="btn btn-secondary">
+                    <i class="fas fa-hospital me-2"></i>Back to Hospitals
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

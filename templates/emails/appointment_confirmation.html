@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Confirmation</title>
+</head>
+<body>
+    <h2>Appointment Confirmation</h2>
+    <p>Dear {{ patient_name }},</p>
+    
+    <p>Your appointment has been successfully booked with the following details:</p>
+    
+    <ul>
+        <li>Hospital: {{ hospital_name }}</li>
+        <li>Department: {{ department_name }}</li>
+        <li>Date: {{ appointment_date }}</li>
+        <li>Time: {{ appointment_time }}</li>
+    </ul>
+    
+    <h3>Important Notes:</h3>
+    <ul>
+        <li>Please arrive 15 minutes before your appointment time</li>
+        <li>Bring any relevant medical records</li>
+        <li>Bring valid ID and insurance information</li>
+    </ul>
+    
+    <p>Hospital Address: {{ hospital_address }}</p>
+    {% if hospital_phone %}
+    <p>Contact: {{ hospital_phone }}</p>
+    {% endif %}
+    
+    <p>If you need to cancel or reschedule, please contact us as soon as possible.</p>
+</body>
+</html>

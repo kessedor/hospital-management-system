@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff List - {{ request.user.hospital.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .staff-list-header {
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .filter-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+    }
+    .staff-card {
+        transition: transform 0.2s;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .staff-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .status-badge {
+        padding: 0.5em 1em;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: 500;
+    }
+    .status-active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    .status-inactive {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+    .status-on-leave {
+        background-color: #fff3e0;
+        color: #ef6c00;
+    }
+    .search-box {
+        border-radius: 25px;
+        padding-left: 20px;
+        border: 2px solid #e0e0e0;
+    }
+    .search-box:focus {
+        border-color: #1e88e5;
+        box-shadow: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="staff-list-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-2">Staff Management</h1>
+                <p class="mb-0">Total Staff: {{ total_staff }} | Active: {{ active_staff }}</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="{% url 'staff_create' %}" class="btn btn-light"><i class="fas fa-plus me-2"></i>Add New Staff</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="filter-card">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control search-box" 
+                       placeholder="Search by name or ID..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-2">
+                <select name="department" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for code, name in departments %}
+                    <option value="{{ code }}" {% if request.GET.department == code %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="role" class="form-select">
+                    <option value="">All Roles</option>
+                    {% for code, name in roles %}
+                    <option value="{{ code }}" {% if request.GET.role == code %}selected{% endif %}>
+                        {{ name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="ACTIVE" {% if request.GET.status == 'ACTIVE' %}selected{% endif %}>Active</option>
+                    <option value="INACTIVE" {% if request.GET.status == 'INACTIVE' %}selected{% endif %}>Inactive</option>
+                    <option value="ON_LEAVE" {% if request.GET.status == 'ON_LEAVE' %}selected{% endif %}>On Leave</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for staff in staff_members %}
+        <div class="col">
+            <div class="card staff-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ staff.user.get_full_name }}</h5>
+                        <span class="status-badge status-{{ staff.status|lower }}">
+                            {{ staff.get_status_display }}
+                        </span>
+                    </div>
+                    <p class="card-text text-muted mb-2">
+                        <i class="fas fa-id-badge me-2"></i>{{ staff.employee_id }}
+                    </p>
+                    <p class="card-text mb-2">
+                        <i class="fas fa-user-md me-2"></i>{{ staff.get_role_display }}
+                    </p>
+                    <p class="card-text mb-2">
+                        <i class="fas fa-hospital me-2"></i>{{ staff.get_department_display }}
+                    </p>
+                    <p class="card-text mb-3">
+                        <i class="fas fa-envelope me-2"></i>{{ staff.user.email }}
+                    </p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'staff_detail' staff.employee_id %}" 
+                           class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+                        <a href="{% url 'staff_update' staff.employee_id %}" 
+                           class="btn btn-outline-secondary btn-sm">
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No staff members found.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if staff_members.has_other_pages %}
+    <nav aria-label="Staff pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if staff_members.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ staff_members.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+
+            {% for num in staff_members.paginator.page_range %}
+            <li class="page-item {% if staff_members.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if staff_members.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ staff_members.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

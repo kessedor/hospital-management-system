@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Styling{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Style Testing Form</h4>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <!-- Test Select2 -->
+                        <div class="mb-3">
+                            <label class="form-label">Select2 Test</label>
+                            <select class="form-select select2-test" style="width: 100%;">
+                                <option value="">Select an option</option>
+                                <option value="1">Option 1</option>
+                                <option value="2">Option 2</option>
+                                <option value="3">Option 3</option>
+                                <option value="4">Option 4</option>
+                                <option value="5">Option 5</option>
+                            </select>
+                        </div>
+
+                        <!-- Test Custom Styling -->
+                        <div class="mb-3">
+                            <label class="form-label">Custom Input Test</label>
+                            <input type="text" class="form-control" placeholder="Type something...">
+                        </div>
+
+                        <!-- Test Button Styling -->
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary me-2">Primary Button</button>
+                            <button type="button" class="btn btn-secondary">Secondary Button</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Wait for the document to be ready
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.select2-test').select2({
+            theme: 'bootstrap4',
+            placeholder: "Select an option",
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Add hover effects to buttons
+        $('.btn').hover(
+            function() { $(this).addClass('shadow-sm'); },
+            function() { $(this).removeClass('shadow-sm'); }
+        );
+
+        // Test if jQuery is working
+        console.log('jQuery version:', $.fn.jquery);
+        console.log('Select2 version:', $.fn.select2.defaults.defaults.version);
+    });
+</script>
+{% endblock %}

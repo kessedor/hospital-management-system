@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical Records - {{ patient.user.get_full_name }} | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .medical-record-list {
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    /* Enhanced Card Styles */
+    .list-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: none;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .list-card:hover {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    /* Search Form Styles */
+    .search-form {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+    }
+
+    /* Table Styles */
+    .record-table {
+        margin: 0;
+    }
+
+    .record-table th {
+        background: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+        padding: 1rem;
+        white-space: nowrap;
+    }
+
+    .record-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .record-table tr {
+        transition: all 0.2s ease;
+    }
+
+    .record-table tr:hover {
+        background-color: #f7fafc;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+        box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        margin: 1.5rem 0 0;
+    }
+
+    .page-link {
+        border: none;
+        padding: 0.75rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        color: #4a5568;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background-color: #4299e1;
+        color: white;
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(45deg, #4299e1, #667eea);
+        border: none;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .medical-record-list {
+            padding: 1rem 0.5rem;
+        }
+
+        .list-card {
+            border-radius: 0;
+        }
+
+        .table-responsive {
+            margin: 0 -1rem;
+        }
+
+        .record-table td {
+            white-space: normal;
+        }
+
+        .btn-group-sm {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-form .row {
+            margin: 0;
+        }
+
+        .search-form .col-md-4,
+        .search-form .col-md-3,
+        .search-form .col-md-2 {
+            padding: 0.5rem;
+        }
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #4a5568;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #cbd5e0;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="medical-record-list">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <h1 class="mb-0">Medical Records</h1>
+            <a href="{% url 'patient_management:medical_record_create' patient.pk %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>New Medical Record
+            </a>
+        </div>
+
+        <div class="list-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>
+                    Patient: {{ patient.user.get_full_name }} ({{ patient.patient_id }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Search and Filter -->
+                <form method="get" class="search-form">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Search records..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="date" class="form-control" value="{{ date_filter }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'patient_management:medical_record_list' patient.pk %}" 
+                               class="btn btn-secondary w-100">
+                                <i class="fas fa-redo me-2"></i>Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table record-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Doctor</th>
+                                <th>Diagnosis</th>
+                                <th>Vital Signs</th>
+                                <th>Follow-up</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in medical_records %}
+                            <tr>
+                                <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
+                                <td>{{ record.doctor.user.get_full_name }}</td>
+                                <td>{{ record.diagnosis|truncatewords:10 }}</td>
+                                <td>
+                                    {% if record.temperature %}
+                                        <div><small class="text-muted">Temp:</small> {{ record.temperature }}°C</div>
+                                    {% endif %}
+                                    {% if record.blood_pressure %}
+                                        <div><small class="text-muted">BP:</small> {{ record.blood_pressure }}</div>
+                                    {% endif %}
+                                    {% if record.pulse_rate %}
+                                        <div><small class="text-muted">Pulse:</small> {{ record.pulse_rate }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.follow_up_date %}
+                                        <span class="badge bg-info">
+                                            {{ record.follow_up_date|date:"Y-m-d" }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No follow-up</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group-sm">
+                                        <a href="{% url 'patient_management:medical_record_detail' patient.pk record.pk %}" 
+                                           class="btn btn-sm btn-info me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'patient_management:medical_record_update' patient.pk record.pk %}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fas fa-folder-open"></i>
+                                        <h5>No medical records found</h5>
+                                        <p class="text-muted">Create a new medical record to get started.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if medical_records.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if medical_records.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" 
+                               href="?page={{ medical_records.previous_page_number }}&search={{ search_query }}&date={{ date_filter }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in medical_records.paginator.page_range %}
+                        <li class="page-item {% if medical_records.number == num %}active{% endif %}">
+                            <a class="page-link" 
+                               href="?page={{ num }}&search={{ search_query }}&date={{ date_filter }}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endfor %}
+
+                        {% if medical_records.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" 
+                               href="?page={{ medical_records.next_page_number }}&search={{ search_query }}&date={{ date_filter }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

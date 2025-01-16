@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* ... existing styles ... */
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>Welcome to NHRS!</h2>
+        <p>Hello,</p>
+        <p>Thank you for registering with the National Health Record System. To complete your registration, please verify your email address by clicking the button below:</p>
+
+        <a href="{{ activation_link }}" class="button">Verify Email Address</a>
+
+        <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+        <p>{{ activation_link }}</p>
+
+        <p>This link will expire in 24 hours for security reasons.</p>
+
+        <div class="footer">
+            <p>If you didn't create this account, you can safely ignore this email.</p>
+            <p>Best regards,<br>The NHRS Team</p>
+        </div>
+    </div>
+</body>
+</html>

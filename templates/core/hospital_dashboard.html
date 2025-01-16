@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - {{ hospital.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Hospital Dashboard</h2>
+        <h5>Welcome, {{ hospital.name }}</h5>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row g-4">
+        <!-- Staff Stats -->
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">
+                        <i class="fas fa-users me-2"></i>Total Staff
+                    </h5>
+                    <h3 class="card-text mt-3">{{ total_staff|default:"0" }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Patient Stats -->
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-success">
+                        <i class="fas fa-procedures me-2"></i>Total Patients
+                    </h5>
+                    <h3 class="card-text mt-3">{{ total_patients|default:"0" }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bed Availability -->
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-info">
+                        <i class="fas fa-bed me-2"></i>Bed Availability
+                    </h5>
+                    <div class="mt-3">
+                        <h3 class="card-text">{{ available_beds|default:"0" }} / {{ total_beds|default:"0" }}</h3>
+                        <p class="text-muted">Occupancy: {{ occupancy_rate|default:"0"|floatformat:1 }}%</p>
+                    </div>
+                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#updateBedsModal">
+                        Update Beds
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Emergency Status -->
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Emergency Status
+                    </h5>
+                    <div class="mt-3">
+                        <h3 class="card-text">
+                            <span class="badge {% if emergency_status == 'OPEN' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ emergency_status|default:"CLOSED" }}
+                            </span>
+                        </h3>
+                    </div>
+                    <form method="post" action="{% url 'toggle_emergency_status' %}" class="mt-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">
+                            Toggle Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Beds Modal -->
+<div class="modal fade" id="updateBedsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Available Beds</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'update_bed_availability' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="available_beds" class="form-label">Available Beds</label>
+                        <input type="number" class="form-control" id="available_beds" name="available_beds" 
+                               value="{{ available_beds|default:"0" }}" min="0" max="{{ total_beds|default:"0" }}">
+                        <div class="form-text">Total beds: {{ total_beds|default:"0" }}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

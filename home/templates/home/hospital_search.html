@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find Hospitals{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .search-section {
+        background: #f8f9fa;
+        padding: 20px 0;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .stat-card h4 {
+        font-size: 1.25rem;
+        margin-bottom: 5px;
+    }
+
+    /* Next Appointment */
+    .next-appointment {
+        background: #e8f4ff;
+        border-left: 4px solid #0d6efd;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    /* Search Filters */
+    .search-filters {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .search-filters form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-filters .form-control {
+        height: 45px;
+        font-size: 16px; /* Better for mobile touch */
+    }
+
+    /* Hospital Cards */
+    .hospital-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .hospital-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .hospital-image {
+        height: 160px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        width: 100%;
+    }
+
+    .hospital-info {
+        padding: 15px;
+    }
+
+    .hospital-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+    }
+
+    .hospital-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item small {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+    }
+
+    .stat-item h5 {
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* Book Button */
+    .book-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 15px;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .page-link {
+        padding: 8px 12px;
+        min-width: 38px;
+        text-align: center;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
+        .search-section {
+            padding: 40px 0;
+        }
+
+        .welcome-section {
+            padding: 30px;
+        }
+
+        .welcome-section h2 {
+            font-size: 2rem;
+        }
+
+        .search-filters {
+            padding: 20px;
+        }
+
+        .search-filters form {
+            flex-direction: row;
+            gap: 15px;
+        }
+
+        .hospital-image {
+            height: 200px;
+        }
+
+        .hospital-info {
+            padding: 20px;
+        }
+
+        .hospital-info h3 {
+            font-size: 1.5rem;
+        }
+
+        .hospital-stats {
+            gap: 20px;
+        }
+
+        .stat-item small {
+            font-size: 0.875rem;
+        }
+
+        .stat-item h5 {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="search-section">
+    <div class="container">
+        {% if user.is_authenticated and user.patient %}
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2>Welcome, {{ user.first_name }}!</h2>
+            <p class="mb-0">Find and book appointments with hospitals near you</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <h4 class="mb-1">{{ upcoming_appointments_count }}</h4>
+                <p class="mb-0 text-muted">Upcoming Appointments</p>
+            </div>
+            <div class="stat-card">
+                <h4 class="mb-1">{{ recent_visits_count }}</h4>
+                <p class="mb-0 text-muted">Recent Visits</p>
+            </div>
+            <div class="stat-card">
+                <a href="{% url 'home:my_appointments' %}" class="text-decoration-none">
+                    <h4 class="mb-1"><i class="fas fa-calendar-alt"></i></h4>
+                    <p class="mb-0 text-muted">View All Appointments</p>
+                </a>
+            </div>
+        </div>
+
+        {% if next_appointment %}
+        <!-- Next Appointment -->
+        <div class="next-appointment">
+            <h5><i class="fas fa-calendar-check me-2"></i>Your Next Appointment</h5>
+            <p class="mb-0">
+                {{ next_appointment.appointment_date|date:"F j, Y" }} at 
+                {{ next_appointment.time_slot }} with {{ next_appointment.hospital.name }}
+            </p>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Search Filters -->
+        <div class="search-filters">
+            <form method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="q" 
+                           placeholder="Search hospitals..." value="{{ query }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="location" 
+                           placeholder="Location" value="{{ location }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Count -->
+        <div class="mb-4">
+            <h2>{{ hospitals.count }} Hospitals Found</h2>
+        </div>
+
+        <!-- Hospital List -->
+        <div class="row">
+            {% for hospital in hospitals %}
+            <div class="col-md-6 col-lg-4">
+                <div class="hospital-card">
+                    {% if hospital.image %}
+                    <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}" class="hospital-image">
+                    {% else %}
+                    <img src="{% static 'images/default-hospital.jpg' %}" alt="{{ hospital.name }}" class="hospital-image">
+                    {% endif %}
+                    
+                    <div class="hospital-info">
+                        <h3>{{ hospital.name }}</h3>
+                        <p class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ hospital.address }}
+                        </p>
+                        
+                        <div class="hospital-stats">
+                            <div class="stat-item">
+                                <small class="text-muted">Doctors</small>
+                                <h5>{{ hospital.doctor_count }}</h5>
+                            </div>
+                            <div class="stat-item">
+                                <small class="text-muted">Available Beds</small>
+                                <h5>{{ hospital.available_beds }}</h5>
+                            </div>
+                            <div class="stat-item">
+                                <small class="text-muted">Rating</small>
+                                <h5>4.5 <i class="fas fa-star text-warning"></i></h5>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'home:book_appointment' hospital.id %}" class="btn btn-primary book-btn">
+                            Book Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-hospital"></i>
+                    <h3>No hospitals found</h3>
+                    <p class="text-muted">Try adjusting your search criteria</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if hospitals.has_other_pages %}
+        <nav aria-label="Hospital pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if hospitals.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ hospitals.previous_page_number }}&q={{ query }}&location={{ location }}">
+                        Previous
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in hospitals.paginator.page_range %}
+                <li class="page-item {% if hospitals.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&q={{ query }}&location={{ location }}">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endfor %}
+
+                {% if hospitals.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ hospitals.next_page_number }}&q={{ query }}&location={{ location }}">
+                        Next
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

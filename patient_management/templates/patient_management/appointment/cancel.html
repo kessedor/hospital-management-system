@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancel Appointment | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .cancel-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Card Styling */
+    .cancel-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Card Header */
+    .card-header {
+        background: linear-gradient(45deg, #e53e3e, #f56565);
+        color: white;
+        padding: 1.25rem;
+        border: none;
+    }
+
+    /* Alert Styling */
+    .alert-warning {
+        border: none;
+        border-radius: 12px;
+        background: rgba(237, 137, 54, 0.1);
+        border-left: 4px solid #ed8936;
+    }
+
+    /* Table Styling */
+    .info-table {
+        margin: 0;
+    }
+
+    .info-table th {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #4a5568;
+        width: 30%;
+    }
+
+    .info-table td {
+        color: #2d3748;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #e53e3e, #f56565);
+        border: none;
+        box-shadow: 0 4px 6px rgba(229, 62, 62, 0.2);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(229, 62, 62, 0.3);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .cancel-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .cancel-card {
+            border-radius: 0;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .info-table {
+            display: block;
+        }
+
+        .info-table tr {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .info-table th,
+        .info-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .info-table th {
+            padding-bottom: 0.25rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .cancel-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .cancel-card {
+            background: #2d3748;
+        }
+
+        .info-table th {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .info-table td {
+            color: #f7fafc;
+        }
+
+        .alert-warning {
+            background: rgba(237, 137, 54, 0.05);
+            color: #f7fafc;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cancel-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="cancel-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-calendar-times me-2"></i>
+                            Cancel Appointment
+                        </h4>
+                        <a href="{% url 'patient_management:appointment_detail' appointment.pk %}" 
+                           class="btn btn-sm btn-light">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <h5 class="alert-heading">Confirm Cancellation</h5>
+                            <p class="mb-0">This action cannot be undone. Please review the appointment details below:</p>
+                        </div>
+
+                        <table class="table info-table">
+                            <tr>
+                                <th>Patient</th>
+                                <td>{{ appointment.patient.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Doctor</th>
+                                <td>{{ appointment.doctor.get_full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date & Time</th>
+                                <td>{{ appointment.appointment_datetime|date:"F d, Y h:i A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>{{ appointment.get_appointment_type_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Reason</th>
+                                <td>{{ appointment.reason }}</td>
+                            </tr>
+                        </table>
+
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <div class="button-group">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-times me-2"></i> Confirm Cancellation
+                                </button>
+                                <a href="{% url 'patient_management:appointment_detail' appointment.pk %}" 
+                                   class="btn btn-secondary">
+                                    <i class="fas fa-check me-2"></i> Keep Appointment
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Confirmation dialog enhancement
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const confirmBtn = form.querySelector('button[type="submit"]');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            const viewportMeta = document.createElement('meta');
+            viewportMeta.name = 'viewport';
+            viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            document.head.appendChild(viewportMeta);
+        }
+    });
+</script>
+{% endblock %}

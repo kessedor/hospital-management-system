@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admission Details | {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Enhanced Container Styles */
+    .admission-detail-container {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+        padding: 1.5rem;
+    }
+
+    /* Card Styling */
+    .detail-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        background: white;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #3182ce, #5a67d8);
+        border: none;
+        padding: 1.25rem;
+        color: white;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Info Groups */
+    .info-group {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .info-group:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        color: #2d3748;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    /* Medical Records Table */
+    .records-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .records-table th {
+        background: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+    }
+
+    .records-table td {
+        padding: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .records-table tr:hover {
+        background: #f7fafc;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .admission-detail-container {
+            padding: 1rem 0.5rem;
+        }
+
+        .detail-card {
+            border-radius: 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-group {
+            padding: 0.5rem 0;
+        }
+
+        .records-table {
+            min-width: 600px;
+        }
+
+        .action-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+        .admission-detail-container {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+
+        .detail-card {
+            background: #2d3748;
+        }
+
+        .info-label {
+            color: #e2e8f0;
+        }
+
+        .info-value {
+            color: #f7fafc;
+        }
+
+        .records-table th {
+            background: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .records-table td {
+            border-top-color: #4a5568;
+        }
+
+        .records-table tr:hover {
+            background: #1a202c;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admission-detail-container">
+    <div class="container-fluid">
+        <!-- Patient Information Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-circle me-2"></i>Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Patient details here -->
+                    </div>
+                    <div class="col-md-6">
+                        <!-- More patient details -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admission Details Card -->
+        <div class="detail-card">
+            <div class="card-header">
+                <h5><i class="fas fa-hospital-user me-2"></i>Admission Details</h5>
+            </div>
+            <div class="card-body">
+                <!-- Admission details content -->
+            </div>
+        </div>
+
+        <!-- Medical Records Card -->
+        <div class="detail-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-notes-medical me-2"></i>Medical Records</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <!-- Medical records table -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhanced table interactions
+        const tableRows = document.querySelectorAll('.records-table tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('button')) {
+                    const recordId = this.dataset.recordId;
+                    if (recordId) {
+                        // Handle record click
+                    }
+                }
+            });
+        });
+
+        // Mobile optimizations
+        if (window.innerWidth < 768) {
+            // Add horizontal scroll hints
+            const tableWrapper = document.querySelector('.table-responsive');
+            if (tableWrapper && tableWrapper.scrollWidth > tableWrapper.clientWidth) {
+                tableWrapper.classList.add('has-scroll');
+            }
+        }
+    });
+</script>
+{% endblock %}
